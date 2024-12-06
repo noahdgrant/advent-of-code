@@ -1,4 +1,4 @@
--- Day 5 part 1
+-- Day 5 part 2
 
 local filename = "input.txt"
 local file = io.open(filename, "r")
@@ -71,27 +71,33 @@ end
 
 local total = 0
 for row_num, update in ipairs(updates) do
-	-- print("Row", table.concat(update, ", "))
+	print("Row", table.concat(update, ", "))
 	local valid = false
-	for page = 1, #update - 1 do
-		for next_page = page + 1, #update do
-			-- print("Checking", update[page], update[next_page])
-			valid = is_in(rules[update[page]], update[next_page])
-			if valid == false then
-				-- invalid order
-				break
+	local updated = false
+	while valid == false do
+		for page = 1, #update - 1 do
+			for next_page = page + 1, #update do
+				-- print("Checking", update[page], update[next_page])
+				valid = is_in(rules[update[page]], update[next_page])
+				if valid == false then
+					-- invalid order
+					print("Invalid row", table.concat(update, ", "))
+					-- swap positions until valid order
+					local temp = update[page]
+					update[page] = update[next_page]
+					update[next_page] = temp
+					print("Updated row", table.concat(update, ", "))
+					updated = true
+					goto continue
+				end
 			end
 		end
-		if valid == false then
-			break
-		end
+		::continue::
 	end
-	if valid == true then
-		-- print("Valid row", row_num)
+	if updated == true then
 		local middle_index = math.ceil(#update / 2)
+		print("Adding", update[middle_index])
 		total = total + tonumber(update[middle_index])
-	else
-		-- print("Invalid row", row_num)
 	end
 end
 
